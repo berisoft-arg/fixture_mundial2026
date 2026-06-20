@@ -368,23 +368,55 @@
             }
         }
 
-        window.moverPosicion = function(contexto, grupoKey, index, direccion) {
+       window.moverPosicion = function(contexto, grupoKey, index, direccion) {
             let lista;
+            
             if (contexto === 'grupo') {
+                // 1. Si no existe orden manual previo, lo inicializamos leyendo el orden actual de la pantalla
+                if (!fixture.ordenManual[grupoKey] || fixture.ordenManual[grupoKey].length === 0) {
+                    const filas = document.querySelectorAll(`#tabla-${grupoKey} tr`);
+                    let nombresActuales = [];
+                    filas.forEach(f => {
+                        // Limpiamos emojis de banderas por si las moscas para quedarnos con el nombre de país limpio
+                        let txt = f.cells[1].textContent.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, "").trim();
+                        nombresActuales.push(txt);
+                    });
+                    fixture.ordenManual[grupoKey] = nombresActuales;
+                }
+                
                 lista = [...fixture.ordenManual[grupoKey]];
                 let nuevoIndex = index + direccion;
                 if (nuevoIndex >= 0 && nuevoIndex < lista.length) {
-                    let temp = lista[index]; lista[index] = lista[nuevoIndex]; lista[nuevoIndex] = temp;
+                    let temp = lista[index]; 
+                    lista[index] = lista[nuevoIndex]; 
+                    lista[nuevoIndex] = temp;
                     fixture.ordenManual[grupoKey] = lista;
                 }
+                
             } else if (contexto === 'terceros') {
+                // 2. Lo mismo para la tabla unificada de terceros
+                if (!fixture.ordenManual['terceros_lista'] || fixture.ordenManual['terceros_lista'].length === 0) {
+                    const filas = document.querySelectorAll(`#tabla-terceros-general tr`);
+                    let llavesActuales = [];
+                    filas.forEach(f => {
+                        let gId = f.cells[0].textContent.replace("Grup.", "").trim();
+                        let txt = f.cells[1].textContent.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, "").trim();
+                        // Guardamos clave compuesta "Grupo:Equipo" para diferenciar si hay nombres repetidos en otros grupos
+                        llavesActuales.push(`${gId}:${txt}`);
+                    });
+                    fixture.ordenManual['terceros_lista'] = llavesActuales;
+                }
+        
                 lista = [...fixture.ordenManual['terceros_lista']];
                 let nuevoIndex = index + direccion;
                 if (nuevoIndex >= 0 && nuevoIndex < lista.length) {
-                    let temp = lista[index]; lista[index] = lista[nuevoIndex]; lista[nuevoIndex] = temp;
+                    let temp = lista[index]; 
+                    lista[index] = lista[nuevoIndex]; 
+                    lista[nuevoIndex] = temp;
                     fixture.ordenManual['terceros_lista'] = lista;
                 }
             }
+            
             localStorage.setItem('fixture_mundial_v8', JSON.stringify(fixture));
             calcularTablas();
         }
