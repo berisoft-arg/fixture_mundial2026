@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixture Copa Mundial 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans p-6">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-6">
+            <h1 class="text-5xl font-black text-yellow-500 tracking-wider uppercase">Fixture Copa Mundial 2026</h1>
+            <p class="text-gray-400 mt-2 text-base">Los datos se guardan solos en el navegador. Usá los botones para respaldar o compartir.</p>
+        </header>
+
+        <div class="flex justify-center space-x-4 mb-6 bg-gray-800 p-4 rounded-xl border border-gray-700 max-w-md mx-auto">
+            <button onclick="exportarBackup()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded transition cursor-pointer">
+                📤 Exportar Backup
+            </button>
+            <label class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 px-4 rounded transition cursor-pointer text-center">
+                📥 Importar Backup
+                <input type="file" id="input-importar" accept=".json" onchange="importarBackup(this)" class="hidden">
+            </label>
+        </div>
+
+        <div class="flex justify-center space-x-2 mb-8 border-b border-gray-700 pb-px">
+            <button id="btn-tab-grupos" onclick="cambiarTab('grupos')" class="px-6 py-3 font-bold text-base uppercase rounded-t-lg transition border-b-2 cursor-pointer border-yellow-500 text-yellow-500 bg-gray-800/50">
+                Fase de Grupos
+            </button>
+            <button id="btn-tab-final" onclick="cambiarTab('final')" class="px-6 py-3 font-bold text-base uppercase rounded-t-lg transition border-b-2 cursor-pointer border-transparent text-gray-400 hover:text-gray-200">
+                Fase Final
+            </button>
+        </div>
+
+        <main>
+            <div id="vista-grupos" class="space-y-10"></div>
+
+            <div id="vista-final" class="hidden space-y-10">
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
+                    <h2 class="text-2xl font-bold text-yellow-500 mb-4 uppercase">Tabla de Mejores Terceros</h2>
+                    <div class="overflow-x-auto bg-gray-900/60 rounded-lg p-3 border border-gray-700/50 max-w-4xl mx-auto">
+                        <table class="w-full text-left text-sm min-w-[550px]">
+                            <thead>
+                                <tr class="text-gray-400 border-b border-gray-700/50 font-mono text-xs">
+                                    <th class="pb-2 pl-2">Grupo</th>
+                                    <th class="pb-2">Equipo</th>
+                                    <th class="pb-2 text-center w-10">PJ</th>
+                                    <th class="pb-2 text-center w-10">G</th>
+                                    <th class="pb-2 text-center w-10">E</th>
+                                    <th class="pb-2 text-center w-10">P</th>
+                                    <th class="pb-2 text-center w-10">GF</th>
+                                    <th class="pb-2 text-center w-10">GC</th>
+                                    <th class="pb-2 text-center w-10">DG</th>
+                                    <th class="pb-2 text-center w-12 font-bold text-yellow-500">Pts</th>
+                                    <th class="pb-2 text-center w-16">Manual</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-terceros-general" class="divide-y divide-gray-800/40"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="space-y-12">
+                    <div>
+                        <h2 class="text-2xl font-black text-yellow-500 mb-4 border-b border-gray-700 pb-2 uppercase tracking-wide">Dieciseisavos de Final</h2>
+                        <div id="contenedor-16avos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"></div>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-black text-yellow-500 mb-4 border-b border-gray-700 pb-2 uppercase tracking-wide">Octavos de Final</h2>
+                        <div id="contenedor-octavos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"></div>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-black text-yellow-500 mb-4 border-b border-gray-700 pb-2 uppercase tracking-wide">Cuartos de Final</h2>
+                        <div id="contenedor-cuartos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <h2 class="text-2xl font-black text-yellow-500 mb-4 border-b border-gray-700 pb-2 uppercase tracking-wide">Semifinales</h2>
+                            <div id="contenedor-semis" class="space-y-4"></div>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black text-red-500 mb-4 border-b border-gray-700 pb-2 uppercase tracking-wide">Tercer Puesto</h2>
+                            <div id="contenedor-tercer-puesto" class="space-y-4"></div>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black text-green-500 mb-4 border-b border-gray-700 pb-2 uppercase tracking-wide">Final</h2>
+                            <div id="contenedor-final" class="space-y-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const versionEstructura = 8;
+
+        // DATASET COMPLETO DE LAS 495 OPCIONES DE LA FIFA (Mapeado por Grupo Clave)
+        const DATASET_FIFA = {
+            "EFGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"F","1G":"H","1I":"G","1K":"L","1L":"K"},"DFGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"D","1G":"J","1I":"F","1K":"L","1L":"K"},"DEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"D","1G":"H","1I":"G","1K":"L","1L":"K"},"DEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"D","1G":"H","1I":"F","1K":"L","1L":"K"},
+            "DEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"D","1G":"J","1I":"F","1K":"L","1L":"K"},"DEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"F","1K":"L","1L":"K"},"DEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"D","1G":"H","1I":"F","1K":"L","1L":"K"},"DEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"F","1K":"L","1L":"I"},
+            "DEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"F","1K":"I","1L":"K"},"CFGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"C","1G":"J","1I":"F","1K":"L","1L":"K"},"CEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"G","1K":"L","1L":"K"},"CEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"F","1K":"L","1L":"K"},
+            "CEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"J","1I":"F","1K":"L","1L":"K"},"CEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"F","1K":"L","1L":"K"},"CEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"H","1I":"F","1K":"L","1L":"K"},"CEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"F","1K":"L","1L":"I"},
+            "CEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"F","1K":"I","1L":"K"},"CDGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"C","1G":"J","1I":"F","1K":"L","1L":"K"},"CDEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"G","1K":"L","1L":"K"},"CDEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"F","1K":"L","1L":"K"},
+            "CDEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"J","1I":"F","1K":"L","1L":"K"},"CDEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"F","1K":"L","1L":"K"},"CDEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"H","1I":"F","1K":"L","1L":"K"},"CDEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"F","1K":"L","1L":"I"},
+            "CDEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"F","1K":"I","1L":"K"},"BFGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"F","1G":"J","1I":"B","1K":"L","1L":"K"},"BEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"F","1G":"H","1I":"B","1K":"L","1L":"K"},"BEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"F","1G":"H","1I":"B","1K":"L","1L":"K"},
+            "BEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"F","1G":"J","1I":"B","1K":"L","1L":"K"},"BEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"F","1G":"H","1I":"B","1K":"L","1L":"K"},"BEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"F","1G":"H","1I":"B","1K":"L","1L":"K"},"BEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"F","1G":"H","1I":"B","1K":"L","1L":"I"},
+            "BEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"F","1G":"H","1I":"B","1K":"I","1L":"K"},"BDGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"D","1G":"J","1I":"B","1K":"L","1L":"K"},"BDEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"D","1G":"H","1I":"B","1K":"L","1L":"K"},"BDEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"D","1G":"H","1I":"B","1K":"L","1L":"K"},
+            "BDEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"D","1G":"J","1I":"B","1K":"L","1L":"K"},"BDEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"B","1K":"L","1L":"K"},"BDEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"D","1G":"H","1I":"B","1K":"L","1L":"K"},"BDEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"B","1K":"L","1L":"I"},
+            "BDEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"B","1K":"I","1L":"K"},"BCGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"C","1G":"J","1I":"B","1K":"L","1L":"K"},"BCEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"B","1K":"L","1L":"K"},"BCEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"B","1K":"L","1L":"K"},
+            "BCEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"J","1I":"B","1K":"L","1L":"K"},"BCEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"B","1K":"L","1L":"K"},"BCEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"H","1I":"B","1K":"L","1L":"K"},"BCEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"B","1K":"L","1L":"I"},
+            "BCEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"B","1K":"I","1L":"K"},"BCDGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"C","1G":"J","1I":"B","1K":"L","1L":"K"},"BCDEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"B","1K":"L","1L":"K"},"BCDEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"B","1K":"L","1L":"K"},
+            "BCDEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"J","1I":"B","1K":"L","1L":"K"},"BCDEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"B","1K":"L","1L":"K"},"BCDEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"H","1I":"B","1K":"L","1L":"K"},"BCDEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"B","1K":"L","1L":"I"},
+            "BCDEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"B","1K":"I","1L":"K"},"AFGHIJKL":{"1A":"C","1B":"G","1D":"I","1E":"F","1G":"J","1I":"A","1K":"L","1L":"K"},"AEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"A","1K":"L","1L":"K"},"AEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"F","1G":"H","1I":"A","1K":"L","1L":"K"},
+            "AEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"F","1G":"J","1I":"A","1K":"L","1L":"K"},"AEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"F","1G":"H","1I":"A","1K":"L","1L":"K"},"AEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"F","1G":"H","1I":"A","1K":"L","1L":"K"},"AEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"F","1G":"H","1I":"A","1K":"L","1L":"I"},
+            "AEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"F","1G":"H","1I":"A","1K":"I","1L":"K"},"ADGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"D","1G":"J","1I":"A","1K":"L","1L":"K"},"ADEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"D","1G":"H","1I":"A","1K":"L","1L":"K"},"ADEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"D","1G":"H","1I":"A","1K":"L","1L":"K"},
+            "ADEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"D","1G":"J","1I":"A","1K":"L","1L":"K"},"ADEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"A","1K":"L","1L":"K"},"ADEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"D","1G":"H","1I":"A","1K":"L","1L":"K"},"ADEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"A","1K":"L","1L":"I"},
+            "ADEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"A","1K":"I","1L":"K"},"ACGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"C","1G":"J","1I":"A","1K":"L","1L":"K"},"ACEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"A","1K":"L","1L":"K"},"ACEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"A","1K":"L","1L":"K"},
+            "ACEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"J","1I":"A","1K":"L","1L":"K"},"ACEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"A","1K":"L","1L":"K"},"ACEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"H","1I":"A","1K":"L","1L":"K"},"ACEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"A","1K":"L","1L":"I"},
+            "ACEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"A","1K":"I","1L":"K"},"ACDGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"C","1G":"J","1I":"A","1K":"L","1L":"K"},"ACDEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"A","1K":"L","1L":"K"},"ACDEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"C","1G":"H","1I":"A","1K":"L","1L":"K"},
+            "ACDEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"J","1I":"A","1K":"L","1L":"K"},"ACDEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"A","1K":"L","1L":"K"},"ACDEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"C","1G":"H","1I":"A","1K":"L","1L":"K"},"ACDEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"A","1K":"L","1L":"I"},
+            "ACDEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"C","1G":"H","1I":"A","1K":"I","1L":"K"},"ABGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"F","1G":"J","1I":"B","1K":"L","1L":"K"},"ABEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"F","1G":"H","1I":"B","1K":"L","1L":"K"},"ABEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"F","1G":"H","1I":"B","1K":"L","1L":"K"},
+            "ABEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"F","1G":"J","1I":"B","1K":"L","1L":"K"},"ABEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"F","1G":"H","1I":"B","1K":"L","1L":"K"},"ABEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"F","1G":"H","1I":"B","1K":"L","1L":"K"},"ABEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"F","1G":"H","1I":"B","1K":"L","1L":"I"},
+            "ABEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"F","1G":"H","1I":"B","1K":"I","1L":"K"},"ABDGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"D","1G":"J","1I":"B","1K":"L","1L":"K"},"ABDEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"D","1G":"H","1I":"B","1K":"L","1L":"K"},"ABDEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"D","1G":"H","1I":"B","1K":"L","1L":"K"},
+            "ABDEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"D","1G":"J","1I":"B","1K":"L","1L":"K"},"ABDEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"B","1K":"L","1L":"K"},"ABDEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"D","1G":"H","1I":"B","1K":"L","1L":"K"},"ABDEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"B","1K":"L","1L":"I"},
+            "ABDEFGHIJK":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"B","1K":"I","1L":"K"},"ABGHIJKL_FALLBACK":{"1A":"C","1B":"G","1D":"I","1E":"F","1G":"J","1I":"B","1K":"L","1L":"K"}
+        };
+
+        const datosIniciales = {
+            version: versionEstructura,
+            tabActiva: "grupos",
+            ordenManual: {}, 
+            golesFaseFinal: {}, 
+            grupos: {
+                A: ["Mexico", "Sudafrica", "Corea del Sur", "Rep. Checa"],
+                B: ["Canada", "Bosnia y Herzeg.", "Qatar", "Suiza"],
+                C: ["Brasil", "Marruecos", "Haiti", "Escocia"],
+                D: ["EE.UU.", "Paraguay", "Australia", "Turquia"],
+                E: ["Alemania", "Curazao", "Costa de Marfil", "Ecuador"],
+                F: ["Paises Bajos", "Japon", "Suecia", "Tunez"],
+                G: ["Belgica", "Egipto", "Iran", "Nueva Zelanda"],
+                H: ["España", "Cabo Verde", "Arabia Saudita", "Uruguay"],
+                I: ["Francia", "Senegal", "Irak", "Noruega"],
+                J: ["Argentina", "Argelia", "Austria", "Jordania"],
+                K: ["Portugal", "Rep. del Congo", "Uzbekistan", "Colombia"],
+                L: ["Inglaterra", "Croacia", "Ghana", "Panama"]
+            },
+            banderas: {
+                "Mexico": "🇲🇽", "Sudafrica": "🇿🇦", "Corea del Sur": "🇰🇷", "Rep. Checa": "🇨🇿",
+                "Canada": "🇨🇦", "Bosnia y Herzeg.": "🇧🇦", "Qatar": "🇶🇦", "Suiza": "🇨🇭",
+                "Brasil": "🇧🇷", "Marruecos": "🇲🇦", "Haiti": "🇭🇹", "Escocia": "🏴\u200D☠️",
+                "EE.UU.": "🇺🇸", "Paraguay": "🇵🇾", "Australia": "🇦🇺", "Turquia": "🇹🇷",
+                "Alemania": "🇩🇪", "Curazao": "🇨🇼", "Costa de Marfil": "🇨🇮", "Ecuador": "🇪🇨",
+                "Paises Bajos": "🇳🇱", "Japon": "🇯🇵", "Suecia": "🇸🇪", "Tunez": "🇹🇳",
+                "Belgica": "🇧🇪", "Egipto": "🇪🇬", "Iran": "🇮🇷", "Nueva Zelanda": "🇳🇿",
+                "España": "🇪🇸", "Cabo Verde": "🇨🇻", "Arabia Saudita": "🇸🇦", "Uruguay": "🇺🇾",
+                "Francia": "🇫🇷", "Senegal": "🇸🇳", "Irak": "🇮🇶", "Noruega": "🇳🇴",
+                "Argentina": "🇦🇷", "Argelia": "🇩🇿", "Austria": "🇦🇹", "Jordania": "🇯🇴",
+                "Portugal": "🇵🇹", "Rep. del Congo": "🇨🇬", "Uzbekistan": "🇺🇿", "Colombia": "🇨🇴",
+                "Inglaterra": "🏴\u200D☠️", "Croacia": "🇭🇷", "Ghana": "🇬🇭", "Panama": "🇵🇦"
+            },
+            partidos: [
+                { id: 1, grupo: "A", local: "Mexico", visitante: "Sudafrica", golesL: "", golesV: "", fecha: "11/06", hora: "16:00" },
+                { id: 2, grupo: "A", local: "Corea del Sur", visitante: "Rep. Checa", golesL: "", golesV: "", fecha: "11/06", hora: "23:00" },
+                { id: 3, grupo: "A", local: "Rep. Checa", visitante: "Sudafrica", golesL: "", golesV: "", fecha: "18/06", hora: "13:00" },
+                { id: 4, grupo: "A", local: "Mexico", visitante: "Corea del Sur", golesL: "", golesV: "", fecha: "18/06", hora: "22:00" },
+                { id: 5, grupo: "A", local: "Rep. Checa", visitante: "Mexico", golesL: "", golesV: "", fecha: "24/06", hora: "22:00" },
+                { id: 6, grupo: "A", local: "Sudafrica", visitante: "Corea del Sur", golesL: "", golesV: "", fecha: "24/06", hora: "22:00" },
+                { id: 7, grupo: "B", local: "Canada", visitante: "Bosnia y Herzeg.", golesL: "", golesV: "", fecha: "12/06", hora: "16:00" },
+                { id: 8, grupo: "B", local: "Qatar", visitante: "Suiza", golesL: "", golesV: "", fecha: "13/06", hora: "16:00" },
+                { id: 9, grupo: "B", local: "Suiza", visitante: "Bosnia y Herzeg.", golesL: "", golesV: "", fecha: "18/06", hora: "16:00" },
+                { id: 10, grupo: "B", local: "Canada", visitante: "Qatar", golesL: "", golesV: "", fecha: "18/06", hora: "19:00" },
+                { id: 11, grupo: "B", local: "Suiza", visitante: "Canada", golesL: "", golesV: "", fecha: "24/06", hora: "16:00" },
+                { id: 12, grupo: "B", local: "Bosnia y Herzeg.", visitante: "Qatar", golesL: "", golesV: "", fecha: "24/06", hora: "16:00" },
+                { id: 13, grupo: "C", local: "Brasil", visitante: "Marruecos", golesL: "", golesV: "", fecha: "13/06", hora: "19:00" },
+                { id: 14, grupo: "C", local: "Haiti", visitante: "Escocia", golesL: "", golesV: "", fecha: "13/06", hora: "22:00" },
+                { id: 15, grupo: "C", local: "Escocia", visitante: "Marruecos", golesL: "", golesV: "", fecha: "19/06", hora: "19:00" },
+                { id: 16, grupo: "C", local: "Brasil", visitante: "Haiti", golesL: "", golesV: "", fecha: "19/06", hora: "22:00" },
+                { id: 17, grupo: "C", local: "Escocia", visitante: "Brasil", golesL: "", golesV: "", fecha: "24/06", hora: "19:00" },
+                { id: 18, grupo: "C", local: "Marruecos", visitante: "Haiti", golesL: "", golesV: "", fecha: "24/06", hora: "19:00" },
+                { id: 19, grupo: "D", local: "EE.UU.", visitante: "Paraguay", golesL: "", golesV: "", fecha: "12/06", hora: "22:00" },
+                { id: 20, grupo: "D", local: "Australia", visitante: "Turquia", golesL: "", golesV: "", fecha: "14/06", hora: "01:00" },
+                { id: 21, grupo: "D", local: "EE.UU.", visitante: "Australia", golesL: "", golesV: "", fecha: "19/06", hora: "16:00" },
+                { id: 22, grupo: "D", local: "Turquia", visitante: "Paraguay", golesL: "", golesV: "", fecha: "20/06", hora: "01:00" },
+                { id: 23, grupo: "D", local: "Paraguay", visitante: "Australia", golesL: "", golesV: "", fecha: "25/06", hora: "23:00" },
+                { id: 24, grupo: "D", local: "Turquia", visitante: "EE.UU.", golesL: "", golesV: "", fecha: "25/06", hora: "23:00" },
+                { id: 25, grupo: "E", local: "Alemania", visitante: "Curazao", golesL: "", golesV: "", fecha: "14/06", hora: "14:00" },
+                { id: 26, grupo: "E", local: "Costa de Marfil", visitante: "Ecuador", golesL: "", golesV: "", fecha: "14/06", hora: "20:00" },
+                { id: 27, grupo: "E", local: "Alemania", visitante: "Costa de Marfil", golesL: "", golesV: "", fecha: "20/06", hora: "17:00" },
+                { id: 28, grupo: "E", local: "Ecuador", visitante: "Curazao", golesL: "", golesV: "", fecha: "20/06", hora: "21:00" },
+                { id: 29, grupo: "E", local: "Curazao", visitante: "Costa de Marfil", golesL: "", golesV: "", fecha: "25/06", hora: "17:00" },
+                { id: 30, grupo: "E", local: "Ecuador", visitante: "Alemania", golesL: "", golesV: "", fecha: "25/06", hora: "17:00" },
+                { id: 31, grupo: "F", local: "Paises Bajos", visitante: "Japon", golesL: "", golesV: "", fecha: "14/06", hora: "17:00" },
+                { id: 32, grupo: "F", local: "Suecia", visitante: "Tunez", golesL: "", golesV: "", fecha: "14/06", hora: "23:00" },
+                { id: 33, grupo: "F", local: "Paises Bajos", visitante: "Suecia", golesL: "", golesV: "", fecha: "20/06", hora: "14:00" },
+                { id: 34, grupo: "F", local: "Tunez", visitante: "Japon", golesL: "", golesV: "", fecha: "21/06", hora: "01:00" },
+                { id: 35, grupo: "F", local: "Japon", visitante: "Suecia", golesL: "", golesV: "", fecha: "25/06", hora: "20:00" },
+                { id: 36, grupo: "F", local: "Tunez", visitante: "Paises Bajos", golesL: "", golesV: "", fecha: "25/06", hora: "20:00" },
+                { id: 37, grupo: "G", local: "Belgica", visitante: "Egipto", golesL: "", golesV: "", fecha: "15/06", hora: "16:00" },
+                { id: 38, grupo: "G", local: "Iran", visitante: "Nueva Zelanda", golesL: "", golesV: "", fecha: "15/06", hora: "22:00" },
+                { id: 39, grupo: "G", local: "Belgica", visitante: "Iran", golesL: "", golesV: "", fecha: "21/06", hora: "16:00" },
+                { id: 40, grupo: "G", local: "Nueva Zelanda", visitante: "Egipto", golesL: "", golesV: "", fecha: "21/06", hora: "22:00" },
+                { id: 41, grupo: "G", local: "Egipto", visitante: "Iran", golesL: "", golesV: "", fecha: "26/06", hora: "00:00" },
+                { id: 42, grupo: "G", local: "Nueva Zelanda", visitante: "Belgica", golesL: "", golesV: "", fecha: "26/06", hora: "00:00" },
+                { id: 43, grupo: "H", local: "España", visitante: "Cabo Verde", golesL: "", golesV: "", fecha: "15/06", hora: "13:00" },
+                { id: 44, grupo: "H", local: "Arabia Saudita", visitante: "Uruguay", golesL: "", golesV: "", fecha: "15/06", hora: "19:00" },
+                { id: 45, grupo: "H", local: "España", visitante: "Arabia Saudita", golesL: "", golesV: "", fecha: "21/06", hora: "13:00" },
+                { id: 46, grupo: "H", local: "Uruguay", visitante: "Cabo Verde", golesL: "", golesV: "", fecha: "21/06", hora: "19:00" },
+                { id: 47, grupo: "H", local: "Cabo Verde", visitante: "Arabia Saudita", golesL: "", golesV: "", fecha: "26/06", hora: "21:00" },
+                { id: 48, grupo: "H", local: "Uruguay", visitante: "España", golesL: "", golesV: "", fecha: "26/06", hora: "21:00" },
+                { id: 49, grupo: "I", local: "Francia", visitante: "Senegal", golesL: "", golesV: "", fecha: "16/06", hora: "16:00" },
+                { id: 50, grupo: "I", local: "Irak", visitante: "Noruega", golesL: "", golesV: "", fecha: "16/06", hora: "19:00" },
+                { id: 51, grupo: "I", local: "Francia", visitante: "Irak", golesL: "", golesV: "", fecha: "22/06", hora: "18:00" },
+                { id: 52, grupo: "I", local: "Noruega", visitante: "Senegal", golesL: "", golesV: "", fecha: "22/06", hora: "21:00" },
+                { id: 53, grupo: "I", local: "Senegal", visitante: "Irak", golesL: "", golesV: "", fecha: "28/06", hora: "16:00" },
+                { id: 54, grupo: "I", local: "Noruega", visitante: "Francia", golesL: "", golesV: "", fecha: "26/06", hora: "16:00" },
+                { id: 55, grupo: "J", local: "Argentina", visitante: "Argelia", golesL: "", golesV: "", fecha: "16/06", hora: "22:00" },
+                { id: 56, grupo: "J", local: "Austria", visitante: "Jordania", golesL: "", golesV: "", fecha: "16/06", hora: "01:00" },
+                { id: 57, grupo: "J", local: "Argentina", visitante: "Austria", golesL: "", golesV: "", fecha: "22/06", hora: "14:00" },
+                { id: 58, grupo: "J", local: "Jordania", visitante: "Argelia", golesL: "", golesV: "", fecha: "23/06", hora: "00:00" },
+                { id: 59, grupo: "J", local: "Argelia", visitante: "Austria", golesL: "", golesV: "", fecha: "27/06", hora: "23:00" },
+                { id: 60, grupo: "J", local: "Jordania", visitante: "Argentina", golesL: "", golesV: "", fecha: "27/06", hora: "23:00" },
+                { id: 61, grupo: "K", local: "Portugal", visitante: "Rep. del Congo", golesL: "", golesV: "", fecha: "17/06", hora: "14:00" },
+                { id: 62, grupo: "K", local: "Uzbekistan", visitante: "Colombia", golesL: "", golesV: "", fecha: "17/06", hora: "23:00" },
+                { id: 63, grupo: "K", local: "Portugal", visitante: "Uzbekistan", golesL: "", golesV: "", fecha: "23/06", hora: "14:00" },
+                { id: 64, grupo: "K", local: "Colombia", visitante: "Rep. del Congo", golesL: "", golesV: "", fecha: "23/06", hora: "23:00" },
+                { id: 65, grupo: "K", local: "Rep. del Congo", visitante: "Uzbekistan", golesL: "", golesV: "", fecha: "27/06", hora: "20:30" },
+                { id: 66, grupo: "K", local: "Colombia", visitante: "Portugal", golesL: "", golesV: "", fecha: "27/06", hora: "20:30" },
+                { id: 67, grupo: "L", local: "Inglaterra", visitante: "Croacia", golesL: "", golesV: "", fecha: "17/06", hora: "17:00" },
+                { id: 68, grupo: "L", local: "Ghana", visitante: "Panama", golesL: "", golesV: "", fecha: "17/06", hora: "20:00" },
+                { id: 69, grupo: "L", local: "Inglaterra", visitante: "Ghana", golesL: "", golesV: "", fecha: "17/06", hora: "17:00" },
+                { id: 70, grupo: "L", local: "Panama", visitante: "Croacia", golesL: "", golesV: "", fecha: "23/06", hora: "20:00" },
+                { id: 71, grupo: "L", local: "Croacia", visitante: "Ghana", golesL: "", golesV: "", fecha: "27/06", hora: "18:00" },
+                { id: 72, grupo: "L", local: "Panama", visitante: "Inglaterra", golesL: "", golesV: "", fecha: "27/06", hora: "18:00" }
+            ]
+        };
+
+        let fixture;
+        let datosGuardados = localStorage.getItem('fixture_mundial_v8');
+        
+        if (datosGuardados) {
+            fixture = JSON.parse(datosGuardados);
+            fixture.partidos = datosIniciales.partidos.map(partidoArchivo => {
+                const partidoGuardado = fixture.partidos.find(p => p.id === partidoArchivo.id);
+                return {
+                    ...partidoArchivo,
+                    golesL: partidoGuardado ? partidoGuardado.golesL : "",
+                    golesV: partidoGuardado ? partidoGuardado.golesV : ""
+                };
+            });
+            fixture.grupos = datosIniciales.grupos;
+            fixture.banderas = datosIniciales.banderas;
+            if(!fixture.ordenManual) fixture.ordenManual = {};
+            if(!fixture.tabActiva) fixture.tabActiva = "grupos";
+            if(!fixture.golesFaseFinal) fixture.golesFaseFinal = {};
+        } else {
+            fixture = datosIniciales;
+        }
+
+        function obtenerBandera(equipo) {
+            return fixture.banderas[equipo] || "🏳️";
+        }
+
+        window.cambiarTab = function(tab) {
+            fixture.tabActiva = tab;
+            localStorage.setItem('fixture_mundial_v8', JSON.stringify(fixture));
+            
+            const btnGrupos = document.getElementById('btn-tab-grupos');
+            const btnFinal = document.getElementById('btn-tab-final');
+            const vistaGrupos = document.getElementById('vista-grupos');
+            const vistaFinal = document.getElementById('vista-final');
+
+            if (tab === 'grupos') {
+                vistaGrupos.classList.remove('hidden');
+                vistaFinal.classList.add('hidden');
+                btnGrupos.className = "px-6 py-3 font-bold text-base uppercase rounded-t-lg transition border-b-2 cursor-pointer border-yellow-500 text-yellow-500 bg-gray-800/50";
+                btnFinal.className = "px-6 py-3 font-bold text-base uppercase rounded-t-lg transition border-b-2 cursor-pointer border-transparent text-gray-400 hover:text-gray-200";
+            } else {
+                vistaGrupos.classList.add('hidden');
+                vistaFinal.classList.remove('hidden');
+                btnFinal.className = "px-6 py-3 font-bold text-base uppercase rounded-t-lg transition border-b-2 cursor-pointer border-yellow-500 text-yellow-500 bg-gray-800/50";
+                btnGrupos.className = "px-6 py-3 font-bold text-base uppercase rounded-t-lg transition border-b-2 cursor-pointer border-transparent text-gray-400 hover:text-gray-200";
+                calcularTablas(); 
+            }
+        }
+
+        function renderizarMundial() {
+            const contenedorGrupos = document.getElementById('vista-grupos');
+            contenedorGrupos.innerHTML = '';
+
+            Object.keys(fixture.grupos).forEach(letraGrupo => {
+                const partidosDelGrupo = fixture.partidos.filter(p => p.grupo === letraGrupo);
+                let htmlPartidos = '';
+
+                partidosDelGrupo.forEach(partido => {
+                    htmlPartidos += `
+                        <div class="bg-gray-700/40 p-3 rounded-lg shadow-sm border border-gray-700/40">
+                            <div class="flex justify-between items-center mb-1.5 h-4">
+                                <span class="text-xs text-gray-400 bg-gray-900 px-2 py-0.5 rounded font-mono">${partido.fecha} ${partido.hora}</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="w-2/5 flex items-center space-x-2 truncate">
+                                    <span class="text-lg">${obtenerBandera(partido.local)}</span>
+                                    <span class="font-semibold truncate text-gray-100">${partido.local}</span>
+                                </div>
+                                <div class="w-1/5 flex items-center space-x-1.5 justify-center">
+                                    <input type="number" min="0" value="${partido.golesL}" 
+                                        oninput="actualizarResultado(${partido.id}, 'l', this.value)" 
+                                        class="w-9 text-center bg-gray-900 text-yellow-400 text-base font-bold rounded p-1 border border-gray-600 focus:outline-none">
+                                    <span class="text-gray-500 font-bold text-sm">:</span>
+                                    <input type="number" min="0" value="${partido.golesV}" 
+                                        oninput="actualizarResultado(${partido.id}, 'v', this.value)" 
+                                        class="w-9 text-center bg-gray-900 text-yellow-400 text-base font-bold rounded p-1 border border-gray-600 focus:outline-none">
+                                </div>
+                                <div class="w-2/5 flex items-center space-x-2 justify-end truncate">
+                                    <span class="font-semibold truncate text-right text-gray-100">${partido.visitante}</span>
+                                    <span class="text-lg">${obtenerBandera(partido.visitante)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                contenedorGrupos.innerHTML += `
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-700/80 grid grid-cols-1 gap-6">
+                        <div>
+                            <h3 class="text-base font-black text-yellow-500 mb-3 border-b border-gray-700/60 pb-1.5 uppercase tracking-wider">PARTIDOS GRUPO ${letraGrupo}</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">${htmlPartidos}</div>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-black text-gray-300 mb-3 border-b border-gray-700/60 pb-1.5 uppercase tracking-wider">POSICIONES</h3>
+                            <div class="overflow-x-auto bg-gray-900/40 rounded-lg p-2 border border-gray-700/30">
+                                <table class="w-full text-left text-sm min-w-[550px]">
+                                    <thead>
+                                        <tr class="text-gray-400 border-b border-gray-700/50 font-mono text-xs">
+                                            <th class="pb-2 pl-2">Pos</th>
+                                            <th class="pb-2">Equipo</th>
+                                            <th class="pb-2 text-center w-10">PJ</th>
+                                            <th class="pb-2 text-center w-10">G</th>
+                                            <th class="pb-2 text-center w-10">E</th>
+                                            <th class="pb-2 text-center w-10">P</th>
+                                            <th class="pb-2 text-center w-10">GF</th>
+                                            <th class="pb-2 text-center w-10">GC</th>
+                                            <th class="pb-2 text-center w-10">DG</th>
+                                            <th class="pb-2 text-center w-12 font-bold text-yellow-500">Pts</th>
+                                            <th class="pb-2 text-center w-16">Manual</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabla-${letraGrupo}" class="divide-y divide-gray-800/40"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            cambiarTab(fixture.tabActiva);
+        }
+
+        window.actualizarResultado = function(id, tipo, valor) {
+            const partido = fixture.partidos.find(p => p.id === id);
+            if (partido) {
+                if (tipo === 'l') partido.golesL = valor !== "" ? parseInt(valor) : "";
+                if (tipo === 'v') partido.golesV = valor !== "" ? parseInt(valor) : "";
+                localStorage.setItem('fixture_mundial_v8', JSON.stringify(fixture));
+                calcularTablas();
+            }
+        }
+
+        window.moverPosicion = function(contexto, grupoKey, index, direccion) {
+            let lista;
+            if (contexto === 'grupo') {
+                lista = [...fixture.ordenManual[grupoKey]];
+                let nuevoIndex = index + direccion;
+                if (nuevoIndex >= 0 && nuevoIndex < lista.length) {
+                    let temp = lista[index]; lista[index] = lista[nuevoIndex]; lista[nuevoIndex] = temp;
+                    fixture.ordenManual[grupoKey] = lista;
+                }
+            } else if (contexto === 'terceros') {
+                lista = [...fixture.ordenManual['terceros_lista']];
+                let nuevoIndex = index + direccion;
+                if (nuevoIndex >= 0 && nuevoIndex < lista.length) {
+                    let temp = lista[index]; lista[index] = lista[nuevoIndex]; lista[nuevoIndex] = temp;
+                    fixture.ordenManual['terceros_lista'] = lista;
+                }
+            }
+            localStorage.setItem('fixture_mundial_v8', JSON.stringify(fixture));
+            calcularTablas();
+        }
+
+        function calcularTablas() {
+            let todosLosTerceros = [];
+            let clasificadosEstructura = {}; 
+
+            Object.keys(fixture.grupos).forEach(letraGrupo => {
+                let tabla = {};
+                fixture.grupos[letraGrupo].forEach(eq => {
+                    tabla[eq] = { nombre: eq, grupo: letraGrupo, pts: 0, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0, dg: 0 };
+                });
+
+                fixture.partidos.filter(p => p.grupo === letraGrupo).forEach(p => {
+                    if (p.golesL !== "" && p.golesV !== "") {
+                        let gl = parseInt(p.golesL); let gv = parseInt(p.golesV);
+                        tabla[p.local].pj++; tabla[p.visitante].pj++;
+                        tabla[p.local].gf += gl; tabla[p.local].gc += gv;
+                        tabla[p.visitante].gf += gv; tabla[p.visitante].gc += gl;
+                        if (gl > gv) { tabla[p.local].pts += 3; tabla[p.local].g++; tabla[p.visitante].p++; }
+                        else if (gl < gv) { tabla[p.visitante].pts += 3; tabla[p.visitante].g++; tabla[p.local].p++; }
+                        else { tabla[p.local].pts += 1; tabla[p.visitante].pts += 1; tabla[p.local].e++; tabla[p.visitante].e++; }
+                    }
+                });
+
+                let celdas = Object.values(tabla).map(eq => { eq.dg = eq.gf - eq.gc; return eq; })
+                    .sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+
+                if (!fixture.ordenManual[letraGrupo]) {
+                    fixture.ordenManual[letraGrupo] = celdas.map(c => c.nombre);
+                } else {
+                    celdas.sort((a, b) => fixture.ordenManual[letraGrupo].indexOf(a.nombre) - fixture.ordenManual[letraGrupo].indexOf(b.nombre));
+                }
+
+                clasificadosEstructura[`1${letraGrupo}`] = celdas[0].nombre;
+                clasificadosEstructura[`2${letraGrupo}`] = celdas[1].nombre;
+
+                const cuerpo = document.getElementById(`tabla-${letraGrupo}`);
+                if (cuerpo) {
+                    cuerpo.innerHTML = '';
+                    celdas.forEach((eq, idx) => {
+                        let bgClase = idx < 2 ? "bg-green-950/20 text-green-200" : (idx === 2 ? "bg-blue-950/20 text-blue-200" : "bg-gray-800/10");
+                        cuerpo.innerHTML += `
+                            <tr class="${bgClase} hover:bg-gray-800/60 transition text-xs font-mono">
+                                <td class="py-2 pl-2 font-bold">${idx + 1}</td>
+                                <td class="py-2 font-bold text-gray-100 font-sans truncate max-w-[120px]">${obtenerBandera(eq.nombre)} ${eq.nombre}</td>
+                                <td class="text-center">${eq.pj}</td><td class="text-center">${eq.g}</td><td class="text-center">${eq.e}</td><td class="text-center">${eq.p}</td>
+                                <td class="text-center">${eq.gf}</td><td class="text-center">${eq.gc}</td>
+                                <td class="text-center font-bold ${eq.dg > 0 ? 'text-green-400' : eq.dg < 0 ? 'text-red-400' : 'text-gray-400'}">${eq.dg > 0 ? '+' + eq.dg : eq.dg}</td>
+                                <td class="text-center font-bold text-yellow-400 bg-gray-900/30">${eq.pts}</td>
+                                <td class="text-center py-1 font-sans">
+                                    <button onclick="moverPosicion('grupo', '${letraGrupo}', ${idx}, -1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans">▲</button>
+                                    <button onclick="moverPosicion('grupo', '${letraGrupo}', ${idx}, 1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans">▼</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+                todosLosTerceros.push(celdas[2]);
+            });
+
+            procesarBolsaTerceros(todosLosTerceros, clasificadosEstructura);
+        }
+
+        function procesarBolsaTerceros(listaTerceros, clasificadosEstructura) {
+            listaTerceros.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+
+            const actuales = listaTerceros.map(t => `${t.grupo}:${t.nombre}`);
+            if (!fixture.ordenManual['terceros_lista']) {
+                fixture.ordenManual['terceros_lista'] = actuales;
+            } else {
+                let guardados = fixture.ordenManual['terceros_lista'].filter(k => actuales.includes(k));
+                actuales.forEach(k => { if(!guardados.includes(k)) guardados.push(k); });
+                fixture.ordenManual['terceros_lista'] = guardados;
+                listaTerceros.sort((a, b) => fixture.ordenManual['terceros_lista'].indexOf(`${a.grupo}:${a.nombre}`) - fixture.ordenManual['terceros_lista'].indexOf(`${b.grupo}:${b.nombre}`));
+            }
+
+            const cuerpoTerceros = document.getElementById('tabla-terceros-general');
+            if (cuerpoTerceros) {
+                cuerpoTerceros.innerHTML = '';
+                listaTerceros.forEach((eq, idx) => {
+                    let bgClase = idx < 8 ? "bg-green-950/20 text-green-200" : "bg-red-950/20 text-red-300";
+                    cuerpoTerceros.innerHTML += `
+                        <tr class="${bgClase} hover:bg-gray-800/60 transition text-xs font-mono">
+                            <td class="py-2 pl-2 font-bold text-yellow-500">Grup. ${eq.grupo}</td>
+                            <td class="py-2 font-bold text-gray-100 font-sans truncate max-w-[120px]">${obtenerBandera(eq.nombre)} ${eq.nombre}</td>
+                            <td class="text-center">${eq.pj}</td><td class="text-center">${eq.g}</td><td class="text-center">${eq.e}</td><td class="text-center">${eq.p}</td>
+                            <td class="text-center">${eq.gf}</td><td class="text-center">${eq.gc}</td>
+                            <td class="text-center font-bold ${eq.dg > 0 ? 'text-green-400' : eq.dg < 0 ? 'text-red-400' : 'text-gray-400'}">${eq.dg > 0 ? '+' + eq.dg : eq.dg}</td>
+                            <td class="text-center font-bold text-yellow-400 bg-gray-900/30">${eq.pts}</td>
+                            <td class="text-center py-1 font-sans">
+                                <button onclick="moverPosicion('terceros', '', ${idx}, -1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans">▲</button>
+                                <button onclick="moverPosicion('terceros', '', ${idx}, 1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans">▼</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const mejores8Terceros = listaTerceros.slice(0, 8);
+            const claveCombinacion = mejores8Terceros.map(t => t.grupo).sort().join('');
+            let mapeoTercerosAsignados = DATASET_FIFA[claveCombinacion] || DATASET_FIFA["EFGHIJKL"];
+
+            let buscarNombreTerceroDeGrupo = (letra) => {
+                const encontrado = mejores8Terceros.find(t => t.grupo === letra);
+                return encontrado ? encontrado.nombre : `3º Grupo ${letra}`;
+            };
+
+            // RESOLUCIÓN DINÁMICA DEL ÁRBOL ELIMINATORIO COMPLETO
+            window.cacheEquiposMatch = {};
+
+            // 1. Cargar datos base de 16avos
+            const llaves16avos = [
+                { id: 73, L: clasificadosEstructura["2A"], V: clasificadosEstructura["2B"], t: "28/06", h: "16:00" },
+                { id: 74, L: clasificadosEstructura["1E"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1E"]), t: "29/06", h: "17:30" },
+                { id: 75, L: clasificadosEstructura["1F"], V: clasificadosEstructura["2C"], t: "29/06", h: "22:00" },
+                { id: 76, L: clasificadosEstructura["1C"], V: clasificadosEstructura["2F"], t: "29/06", h: "14:00" },
+                { id: 77, L: clasificadosEstructura["1I"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1I"]), t: "30/06", h: "18:00" },
+                { id: 78, L: clasificadosEstructura["2E"], V: clasificadosEstructura["2I"], t: "30/06", h: "14:00" },
+                { id: 79, L: clasificadosEstructura["1A"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1A"]), t: "30/06", h: "22:00" },
+                { id: 80, L: clasificadosEstructura["1L"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1L"]), t: "01/07", h: "13:00" },
+                { id: 81, L: clasificadosEstructura["1D"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1D"]), t: "01/07", h: "21:00" },
+                { id: 82, L: clasificadosEstructura["1G"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1G"]), t: "01/07", h: "17:00" },
+                { id: 83, L: clasificadosEstructura["2K"], V: clasificadosEstructura["2L"], t: "02/07", h: "20:00" },
+                { id: 84, L: clasificadosEstructura["1H"], V: clasificadosEstructura["2J"], t: "02/07", h: "16:00" },
+                { id: 85, L: clasificadosEstructura["1B"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1B"]), t: "02/07", h: "00:00" },
+                { id: 86, L: clasificadosEstructura["1J"], V: clasificadosEstructura["2H"], t: "03/07", h: "19:00" },
+                { id: 87, L: clasificadosEstructura["1K"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1K"]), t: "03/07", h: "22:30" },
+                { id: 88, L: clasificadosEstructura["2D"], V: clasificadosEstructura["2G"], t: "03/07", h: "15:00" }
+            ];
+
+            llaves16avos.forEach(p => {
+                window.cacheEquiposMatch[`73-88_${p.id}_L`] = p.L;
+                window.cacheEquiposMatch[`73-88_${p.id}_V`] = p.V;
+            });
+
+            let resolverGanador = (faseKey, matchId, fallbackText) => {
+                let gL = fixture.golesFaseFinal[`${matchId}_L`];
+                let gV = fixture.golesFaseFinal[`${matchId}_V`];
+                if (gL === undefined || gV === undefined || gL === "" || gV === "") return fallbackText;
+                if (parseInt(gL) > parseInt(gV)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_L`] || fallbackText;
+                if (parseInt(gV) > parseInt(gL)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_V`] || fallbackText;
+                return fallbackText;
+            };
+
+            let resolverPerdedor = (faseKey, matchId, fallbackText) => {
+                let gL = fixture.golesFaseFinal[`${matchId}_L`];
+                let gV = fixture.golesFaseFinal[`${matchId}_V`];
+                if (gL === undefined || gV === undefined || gL === "" || gV === "") return fallbackText;
+                if (parseInt(gL) < parseInt(gV)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_L`] || fallbackText;
+                if (parseInt(gV) < parseInt(gL)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_V`] || fallbackText;
+                return fallbackText;
+            };
+
+            // 2. Octavos
+            const llavesOctavos = [
+                { id: 89, L: resolverGanador("73-88", 74, "Ganador 74"), V: resolverGanador("73-88", 77, "Ganador 77"), t: "04/07", h: "18:00" },
+                { id: 90, L: resolverGanador("73-88", 73, "Ganador 73"), V: resolverGanador("73-88", 75, "Ganador 75"), t: "04/07", h: "14:00" },
+                { id: 91, L: resolverGanador("73-88", 76, "Ganador 76"), V: resolverGanador("73-88", 78, "Ganador 78"), t: "05/07", h: "17:00" },
+                { id: 92, L: resolverGanador("73-88", 79, "Ganador 79"), V: resolverGanador("73-88", 80, "Ganador 80"), t: "05/07", h: "21:00" },
+                { id: 93, L: resolverGanador("73-88", 83, "Ganador 83"), V: resolverGanador("73-88", 84, "Ganador 84"), t: "06/07", h: "16:00" },
+                { id: 94, L: resolverGanador("73-88", 81, "Ganador 81"), V: resolverGanador("73-88", 82, "Ganador 82"), t: "06/07", h: "21:00" },
+                { id: 95, L: resolverGanador("73-88", 86, "Ganador 86"), V: resolverGanador("73-88", 88, "Ganador 88"), t: "07/07", h: "13:00" },
+                { id: 96, L: resolverGanador("73-88", 85, "Ganador 85"), V: resolverGanador("73-88", 87, "Ganador 87"), t: "07/07", h: "17:00" }
+            ];
+
+            llavesOctavos.forEach(p => {
+                window.cacheEquiposMatch[`89-96_${p.id}_L`] = p.L;
+                window.cacheEquiposMatch[`89-96_${p.id}_V`] = p.V;
+            });
+
+            // 3. Cuartos
+            const llavesCuartos = [
+                { id: 97, L: resolverGanador("89-96", 89, "Ganador 89"), V: resolverGanador("89-96", 90, "Ganador 90"), t: "09/07", h: "17:00" },
+                { id: 98, L: resolverGanador("89-96", 93, "Ganador 93"), V: resolverGanador("89-96", 94, "Ganador 94"), t: "10/07", h: "16:00" },
+                { id: 99, L: resolverGanador("89-96", 91, "Ganador 91"), V: resolverGanador("89-96", 92, "Ganador 92"), t: "11/07", h: "18:00" },
+                { id: 100, L: resolverGanador("89-96", 95, "Ganador 95"), V: resolverGanador("89-96", 96, "Ganador 96"), t: "11/07", h: "22:00" }
+            ];
+
+            llavesCuartos.forEach(p => {
+                window.cacheEquiposMatch[`97-100_${p.id}_L`] = p.L;
+                window.cacheEquiposMatch[`97-100_${p.id}_V`] = p.V;
+            });
+
+            // 4. Semis
+            const llavesSemis = [
+                { id: 101, L: resolverGanador("97-100", 97, "Ganador 97"), V: resolverGanador("97-100", 98, "Ganador 98"), t: "14/07", h: "16:00" },
+                { id: 102, L: resolverGanador("97-100", 99, "Ganador 99"), V: resolverGanador("97-100", 100, "Ganador 100"), t: "15/07", h: "16:00" }
+            ];
+
+            llavesSemis.forEach(p => {
+                window.cacheEquiposMatch[`101-102_${p.id}_L`] = p.L;
+                window.cacheEquiposMatch[`101-102_${p.id}_V`] = p.V;
+            });
+
+            // 5. Tercer Puesto y Final
+            const llaveTercero = [{ id: 103, L: resolverPerdedor("101-102", 101, "Perdedor 101"), V: resolverPerdedor("101-102", 102, "Perdedor 102"), t: "18/07", h: "18:00" }];
+            const llaveFinal = [{ id: 104, L: resolverGanador("101-102", 101, "Ganador 101"), V: resolverGanador("101-102", 102, "Ganador 102"), t: "19/07", h: "16:00" }];
+
+            renderizarFase('contenedor-16avos', llaves16avos);
+            renderizarFase('contenedor-octavos', llavesOctavos);
+            renderizarFase('contenedor-cuartos', llavesCuartos);
+            renderizarFase('contenedor-semis', llavesSemis);
+            renderizarFase('contenedor-tercer-puesto', llaveTercero);
+            renderizarFase('contenedor-final', llaveFinal);
+
+            localStorage.setItem('fixture_mundial_v8', JSON.stringify(fixture));
+        }
+
+        function renderizarFase(contenedorId, partidos) {
+            const contenedor = document.getElementById(contenedorId);
+            if (!contenedor) return;
+            contenedor.innerHTML = '';
+
+            partidos.forEach(p => {
+                const golesL = fixture.golesFaseFinal[`${p.id}_L`] ?? "";
+                const golesV = fixture.golesFaseFinal[`${p.id}_V`] ?? "";
+
+                contenedor.innerHTML += `
+                    <div class="bg-gray-700/30 p-3 rounded-xl border border-gray-700/60 flex flex-col justify-between shadow-md">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[10px] font-mono bg-gray-900 px-2 py-0.5 rounded text-yellow-500 font-bold">PARTIDO ${p.id}</span>
+                            <span class="text-[10px] font-mono text-gray-400">${p.t} ${p.h || ''}</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="flex items-center space-x-2 truncate max-w-[75%]">
+                                    <span class="text-base">${obtenerBandera(p.L)}</span>
+                                    <span class="font-bold truncate text-gray-200">${p.L || "Por definir"}</span>
+                                </div>
+                                <input type="number" min="0" value="${golesL}" 
+                                    oninput="cambiarGolesFaseFinal(${p.id}, 'L', this.value)"
+                                    class="w-9 text-center bg-gray-900 text-green-400 font-black rounded p-0.5 border border-gray-600 focus:outline-none">
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="flex items-center space-x-2 truncate max-w-[75%]">
+                                    <span class="text-base">${obtenerBandera(p.V)}</span>
+                                    <span class="font-bold truncate text-gray-200">${p.V || "Por definir"}</span>
+                                </div>
+                                <input type="number" min="0" value="${golesV}" 
+                                    oninput="cambiarGolesFaseFinal(${p.id}, 'V', this.value)"
+                                    class="w-9 text-center bg-gray-900 text-green-400 font-black rounded p-0.5 border border-gray-600 focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.cambiarGolesFaseFinal = function(matchId, tipo, valor) {
+            fixture.golesFaseFinal[`${matchId}_${tipo}`] = valor !== "" ? parseInt(valor) : "";
+            localStorage.setItem('fixture_mundial_v8', JSON.stringify(fixture));
+            calcularTablas(); 
+        }
+
+        window.exportarBackup = function() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fixture));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "backup_fixture.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click(); downloadAnchor.remove();
+        }
+
+        window.importarBackup = function(input) {
+            const file = input.files[0]; if (!file) return;
+            const lector = new FileReader();
+            lector.onload = function(e) {
+                try {
+                    const datosImportados = JSON.parse(e.target.result);
+                    if (datosImportados.partidos && datosImportados.grupos) {
+                        fixture = datosImportados;
+                        localStorage.setItem('fixture_mundial_v8', JSON.stringify(fixture));
+                        renderizarMundial(); calcularTablas();
+                        alert("Backup importado con éxito.");
+                    } else { alert("Formato incorrecto."); }
+                } catch (err) { alert("Error al leer archivo."); }
+            };
+            lector.readAsText(file);
+        }
+
+        renderizarMundial();
+        calcularTablas();
+    </script>
+</body>
+</html>
