@@ -229,7 +229,7 @@
                 { id: 66, grupo: "K", local: "Colombia", visitante: "Portugal", golesL: "", golesV: "", fecha: "27/06", hora: "20:30" },
                 { id: 67, grupo: "L", local: "Inglaterra", visitante: "Croacia", golesL: "", golesV: "", fecha: "17/06", hora: "17:00" },
                 { id: 68, grupo: "L", local: "Ghana", visitante: "Panama", golesL: "", golesV: "", fecha: "17/06", hora: "20:00" },
-                { id: 69, grupo: "L", local: "Inglaterra", visitante: "Ghana", golesL: "", golesV: "", fecha: "17/06", hora: "17:00" },
+                { id: 69, grupo: "L", local: "Inglaterra", visitante: "Ghana", golesL: "", golesV: "", fecha: "23/06", hora: "17:00" },
                 { id: 70, grupo: "L", local: "Panama", visitante: "Croacia", golesL: "", golesV: "", fecha: "23/06", hora: "20:00" },
                 { id: 71, grupo: "L", local: "Croacia", visitante: "Ghana", golesL: "", golesV: "", fecha: "27/06", hora: "18:00" },
                 { id: 72, grupo: "L", local: "Panama", visitante: "Inglaterra", golesL: "", golesV: "", fecha: "27/06", hora: "18:00" }
@@ -389,16 +389,17 @@
             calcularTablas();
         }
 
-        function calcularTablas() {
+       function calcularTablas() {
             let todosLosTerceros = [];
             let clasificadosEstructura = {}; 
-
+        
             Object.keys(fixture.grupos).forEach(letraGrupo => {
                 let tabla = {};
                 fixture.grupos[letraGrupo].forEach(eq => {
                     tabla[eq] = { nombre: eq, grupo: letraGrupo, pts: 0, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0, dg: 0 };
                 });
-
+        
+                // 1. Calcular estadísticas matemáticas en base a los goles ingresados
                 fixture.partidos.filter(p => p.grupo === letraGrupo).forEach(p => {
                     if (p.golesL !== "" && p.golesV !== "") {
                         let gl = parseInt(p.golesL); let gv = parseInt(p.golesV);
@@ -410,19 +411,19 @@
                         else { tabla[p.local].pts += 1; tabla[p.visitante].pts += 1; tabla[p.local].e++; tabla[p.visitante].e++; }
                     }
                 });
-
+        
+                // 2. Ordenar por matemática pura (Puntos -> DG -> GF)
                 let celdas = Object.values(tabla).map(eq => { eq.dg = eq.gf - eq.gc; return eq; })
                     .sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
-
-                if (!fixture.ordenManual[letraGrupo]) {
-                    fixture.ordenManual[letraGrupo] = celdas.map(c => c.nombre);
-                } else {
+        
+                // 3. FIX: Aplicar orden manual SOLO si el usuario interactuó explícitamente (se controla en moverPosicion)
+                if (fixture.ordenManual[letraGrupo] && fixture.ordenManual[letraGrupo].length > 0) {
                     celdas.sort((a, b) => fixture.ordenManual[letraGrupo].indexOf(a.nombre) - fixture.ordenManual[letraGrupo].indexOf(b.nombre));
                 }
-
+        
                 clasificadosEstructura[`1${letraGrupo}`] = celdas[0].nombre;
                 clasificadosEstructura[`2${letraGrupo}`] = celdas[1].nombre;
-
+        
                 const cuerpo = document.getElementById(`tabla-${letraGrupo}`);
                 if (cuerpo) {
                     cuerpo.innerHTML = '';
@@ -437,8 +438,8 @@
                                 <td class="text-center font-bold ${eq.dg > 0 ? 'text-green-400' : eq.dg < 0 ? 'text-red-400' : 'text-gray-400'}">${eq.dg > 0 ? '+' + eq.dg : eq.dg}</td>
                                 <td class="text-center font-bold text-yellow-400 bg-gray-900/30">${eq.pts}</td>
                                 <td class="text-center py-1 font-sans">
-                                    <button onclick="moverPosicion('grupo', '${letraGrupo}', ${idx}, -1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans">▲</button>
-                                    <button onclick="moverPosicion('grupo', '${letraGrupo}', ${idx}, 1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans">▼</button>
+                                    <button onclick="moverPosicion('grupo', '${letraGrupo}', ${idx}, -1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans cursor-pointer">▲</button>
+                                    <button onclick="moverPosicion('grupo', '${letraGrupo}', ${idx}, 1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans cursor-pointer">▼</button>
                                 </td>
                             </tr>
                         `;
@@ -447,8 +448,8 @@
                 todosLosTerceros.push(celdas[2]);
             });
 
-            procesarBolsaTerceros(todosLosTerceros, clasificadosEstructura);
-        }
+    procesarBolsaTerceros(todosLosTerceros, clasificadosEstructura);
+}
 
         function procesarBolsaTerceros(listaTerceros, clasificadosEstructura) {
             listaTerceros.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
