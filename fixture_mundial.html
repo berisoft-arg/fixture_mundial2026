@@ -96,7 +96,6 @@
     <script>
         const versionEstructura = 8;
 
-        // DATASET COMPLETO DE LAS 495 OPCIONES DE LA FIFA (Mapeado por Grupo Clave)
         const DATASET_FIFA = {
             "EFGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"F","1G":"H","1I":"G","1K":"L","1L":"K"},"DFGHIJKL":{"1A":"H","1B":"G","1D":"I","1E":"D","1G":"J","1I":"F","1K":"L","1L":"K"},"DEGHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"D","1G":"H","1I":"G","1K":"L","1L":"K"},"DEFHIJKL":{"1A":"E","1B":"J","1D":"I","1E":"D","1G":"H","1I":"F","1K":"L","1L":"K"},
             "DEFGIJKL":{"1A":"E","1B":"G","1D":"I","1E":"D","1G":"J","1I":"F","1K":"L","1L":"K"},"DEFGHJKL":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"F","1K":"L","1L":"K"},"DEFGHIKL":{"1A":"E","1B":"G","1D":"I","1E":"D","1G":"H","1I":"F","1K":"L","1L":"K"},"DEFGHIJL":{"1A":"E","1B":"G","1D":"J","1E":"D","1G":"H","1I":"F","1K":"L","1L":"I"},
@@ -146,19 +145,20 @@
                 K: ["Portugal", "Rep. del Congo", "Uzbekistan", "Colombia"],
                 L: ["Inglaterra", "Croacia", "Ghana", "Panama"]
             },
+            // MAPEADO DE ISO CODES PARA CARGA DE IMÁGENES VECTORIALES
             banderas: {
-                "Mexico": "🇲🇽", "Sudafrica": "🇿🇦", "Corea del Sur": "🇰🇷", "Rep. Checa": "🇨🇿",
-                "Canada": "🇨🇦", "Bosnia y Herzeg.": "🇧🇦", "Qatar": "🇶🇦", "Suiza": "🇨🇭",
-                "Brasil": "🇧🇷", "Marruecos": "🇲🇦", "Haiti": "🇭🇹", "Escocia": "🏴\u200D☠️",
-                "EE.UU.": "🇺🇸", "Paraguay": "🇵🇾", "Australia": "🇦🇺", "Turquia": "🇹🇷",
-                "Alemania": "🇩🇪", "Curazao": "🇨🇼", "Costa de Marfil": "🇨🇮", "Ecuador": "🇪🇨",
-                "Paises Bajos": "🇳🇱", "Japon": "🇯🇵", "Suecia": "🇸🇪", "Tunez": "🇹🇳",
-                "Belgica": "🇧🇪", "Egipto": "🇪🇬", "Iran": "🇮🇷", "Nueva Zelanda": "🇳🇿",
-                "España": "🇪🇸", "Cabo Verde": "🇨🇻", "Arabia Saudita": "🇸🇦", "Uruguay": "🇺🇾",
-                "Francia": "🇫🇷", "Senegal": "🇸🇳", "Irak": "🇮🇶", "Noruega": "🇳🇴",
-                "Argentina": "🇦🇷", "Argelia": "🇩🇿", "Austria": "🇦🇹", "Jordania": "🇯🇴",
-                "Portugal": "🇵🇹", "Rep. del Congo": "🇨🇬", "Uzbekistan": "🇺🇿", "Colombia": "🇨🇴",
-                "Inglaterra": "🏴\u200D☠️", "Croacia": "🇭🇷", "Ghana": "🇬🇭", "Panama": "🇵🇦"
+                "Mexico": "mx", "Sudafrica": "za", "Corea del Sur": "kr", "Rep. Checa": "cz",
+                "Canada": "ca", "Bosnia y Herzeg.": "ba", "Qatar": "qa", "Suiza": "ch",
+                "Brasil": "br", "Marruecos": "ma", "Haiti": "ht", "Escocia": "gb-sct",
+                "EE.UU.": "us", "Paraguay": "py", "Australia": "au", "Turquia": "tr",
+                "Alemania": "de", "Curazao": "cw", "Costa de Marfil": "ci", "Ecuador": "ec",
+                "Paises Bajos": "nl", "Japon": "jp", "Suecia": "se", "Tunez": "tn",
+                "Belgica": "be", "Egipto": "eg", "Iran": "ir", "Nueva Zelanda": "nz",
+                "España": "es", "Cabo Verde": "cv", "Arabia Saudita": "sa", "Uruguay": "uy",
+                "Francia": "fr", "Senegal": "sn", "Irak": "iq", "Noruega": "no",
+                "Argentina": "ar", "Argelia": "dz", "Austria": "at", "Jordania": "jo",
+                "Portugal": "pt", "Rep. del Congo": "cg", "Uzbekistan": "uz", "Colombia": "co",
+                "Inglaterra": "gb-eng", "Croacia": "hr", "Ghana": "gh", "Panama": "pa"
             },
             partidos: [
                 { id: 1, grupo: "A", local: "Mexico", visitante: "Sudafrica", golesL: "", golesV: "", fecha: "11/06", hora: "16:00" },
@@ -200,7 +200,7 @@
                 { id: 37, grupo: "G", local: "Belgica", visitante: "Egipto", golesL: "", golesV: "", fecha: "15/06", hora: "16:00" },
                 { id: 38, grupo: "G", local: "Iran", visitante: "Nueva Zelanda", golesL: "", golesV: "", fecha: "15/06", hora: "22:00" },
                 { id: 39, grupo: "G", local: "Belgica", visitante: "Iran", golesL: "", golesV: "", fecha: "21/06", hora: "16:00" },
-                { id: 40, grupo: "G", local: "Nueva Zelanda", visitante: "Egipto", golesL: "", golesV: "", fecha: "21/06", hora: "22:00" },
+                { id: 40, group: "G", local: "Nueva Zelanda", visitante: "Egipto", golesL: "", golesV: "", fecha: "21/06", hora: "22:00" },
                 { id: 41, grupo: "G", local: "Egipto", visitante: "Iran", golesL: "", golesV: "", fecha: "26/06", hora: "00:00" },
                 { id: 42, grupo: "G", local: "Nueva Zelanda", visitante: "Belgica", golesL: "", golesV: "", fecha: "26/06", hora: "00:00" },
                 { id: 43, grupo: "H", local: "España", visitante: "Cabo Verde", golesL: "", golesV: "", fecha: "15/06", hora: "13:00" },
@@ -231,7 +231,7 @@
                 { id: 68, grupo: "L", local: "Ghana", visitante: "Panama", golesL: "", golesV: "", fecha: "17/06", hora: "20:00" },
                 { id: 69, grupo: "L", local: "Inglaterra", visitante: "Ghana", golesL: "", golesV: "", fecha: "23/06", hora: "17:00" },
                 { id: 70, grupo: "L", local: "Panama", visitante: "Croacia", golesL: "", golesV: "", fecha: "23/06", hora: "20:00" },
-                { id: 71, grupo: "L", local: "Croacia", visitante: "Ghana", golesL: "", golesV: "", fecha: "27/06", hora: "18:00" },
+                { id: 71, grupo: "L", local: "Croacia", visitante: "Ghana", golesL: "", golesV: "", fecha: "18/06", hora: "18:00" },
                 { id: 72, grupo: "L", local: "Panama", visitante: "Inglaterra", golesL: "", golesV: "", fecha: "27/06", hora: "18:00" }
             ]
         };
@@ -258,8 +258,11 @@
             fixture = datosIniciales;
         }
 
+        // CONTROL DE RENDERIZADO VECTORIAL SEGURO
         function obtenerBandera(equipo) {
-            return fixture.banderas[equipo] || "🏳️";
+            const code = fixture.banderas[equipo];
+            if (!code) return `<span class="inline-block w-5 text-center">🏳️</span>`;
+            return `<img src="https://flagcdn.com/w20/${code}.png" class="inline-block h-3.5 w-5 object-cover rounded shadow-xs" alt="${equipo}">`;
         }
 
         window.cambiarTab = function(tab) {
@@ -301,7 +304,7 @@
                             </div>
                             <div class="flex items-center justify-between text-sm">
                                 <div class="w-2/5 flex items-center space-x-2 truncate">
-                                    <span class="text-lg">${obtenerBandera(partido.local)}</span>
+                                    ${obtenerBandera(partido.local)}
                                     <span class="font-semibold truncate text-gray-100">${partido.local}</span>
                                 </div>
                                 <div class="w-1/5 flex items-center space-x-1.5 justify-center">
@@ -315,7 +318,7 @@
                                 </div>
                                 <div class="w-2/5 flex items-center space-x-2 justify-end truncate">
                                     <span class="font-semibold truncate text-right text-gray-100">${partido.visitante}</span>
-                                    <span class="text-lg">${obtenerBandera(partido.visitante)}</span>
+                                    ${obtenerBandera(partido.visitante)}
                                 </div>
                             </div>
                         </div>
@@ -354,8 +357,6 @@
                     </div>
                 `;
             });
-            
-            cambiarTab(fixture.tabActiva);
         }
 
         window.actualizarResultado = function(id, tipo, valor) {
@@ -368,18 +369,17 @@
             }
         }
 
-       window.moverPosicion = function(contexto, grupoKey, index, direccion) {
+        window.moverPosicion = function(contexto, grupoKey, index, direccion) {
             let lista;
             
             if (contexto === 'grupo') {
-                // 1. Si no existe orden manual previo, lo inicializamos leyendo el orden actual de la pantalla
                 if (!fixture.ordenManual[grupoKey] || fixture.ordenManual[grupoKey].length === 0) {
                     const filas = document.querySelectorAll(`#tabla-${grupoKey} tr`);
                     let nombresActuales = [];
                     filas.forEach(f => {
-                        // Limpiamos emojis de banderas por si las moscas para quedarnos con el nombre de país limpio
-                        let txt = f.cells[1].textContent.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, "").trim();
-                        nombresActuales.push(txt);
+                        // FIX: Extraemos de forma limpia el texto ignorando el nodo img
+                        let txt = f.cells[1].innerText || f.cells[1].textContent;
+                        nombresActuales.push(txt.trim());
                     });
                     fixture.ordenManual[grupoKey] = nombresActuales;
                 }
@@ -394,15 +394,13 @@
                 }
                 
             } else if (contexto === 'terceros') {
-                // 2. Lo mismo para la tabla unificada de terceros
                 if (!fixture.ordenManual['terceros_lista'] || fixture.ordenManual['terceros_lista'].length === 0) {
                     const filas = document.querySelectorAll(`#tabla-terceros-general tr`);
                     let llavesActuales = [];
                     filas.forEach(f => {
                         let gId = f.cells[0].textContent.replace("Grup.", "").trim();
-                        let txt = f.cells[1].textContent.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, "").trim();
-                        // Guardamos clave compuesta "Grupo:Equipo" para diferenciar si hay nombres repetidos en otros grupos
-                        llavesActuales.push(`${gId}:${txt}`);
+                        let txt = f.cells[1].innerText || f.cells[1].textContent;
+                        llavesActuales.push(`${gId}:${txt.trim()}`);
                     });
                     fixture.ordenManual['terceros_lista'] = llavesActuales;
                 }
@@ -421,7 +419,7 @@
             calcularTablas();
         }
 
-       function calcularTablas() {
+        function calcularTablas() {
             let todosLosTerceros = [];
             let clasificadosEstructura = {}; 
         
@@ -431,7 +429,6 @@
                     tabla[eq] = { nombre: eq, grupo: letraGrupo, pts: 0, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0, dg: 0 };
                 });
         
-                // 1. Calcular estadísticas matemáticas en base a los goles ingresados
                 fixture.partidos.filter(p => p.grupo === letraGrupo).forEach(p => {
                     if (p.golesL !== "" && p.golesV !== "") {
                         let gl = parseInt(p.golesL); let gv = parseInt(p.golesV);
@@ -444,11 +441,9 @@
                     }
                 });
         
-                // 2. Ordenar por matemática pura (Puntos -> DG -> GF)
                 let celdas = Object.values(tabla).map(eq => { eq.dg = eq.gf - eq.gc; return eq; })
                     .sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
         
-                // 3. FIX: Aplicar orden manual SOLO si el usuario interactuó explícitamente (se controla en moverPosicion)
                 if (fixture.ordenManual[letraGrupo] && fixture.ordenManual[letraGrupo].length > 0) {
                     celdas.sort((a, b) => fixture.ordenManual[letraGrupo].indexOf(a.nombre) - fixture.ordenManual[letraGrupo].indexOf(b.nombre));
                 }
@@ -464,7 +459,7 @@
                         cuerpo.innerHTML += `
                             <tr class="${bgClase} hover:bg-gray-800/60 transition text-xs font-mono">
                                 <td class="py-2 pl-2 font-bold">${idx + 1}</td>
-                                <td class="py-2 font-bold text-gray-100 font-sans truncate max-w-[120px]">${obtenerBandera(eq.nombre)} ${eq.nombre}</td>
+                                <td class="py-2 font-bold text-gray-100 font-sans flex items-center space-x-2 truncate max-w-[150px]">${obtenerBandera(eq.nombre)} <span>${eq.nombre}</span></td>
                                 <td class="text-center">${eq.pj}</td><td class="text-center">${eq.g}</td><td class="text-center">${eq.e}</td><td class="text-center">${eq.p}</td>
                                 <td class="text-center">${eq.gf}</td><td class="text-center">${eq.gc}</td>
                                 <td class="text-center font-bold ${eq.dg > 0 ? 'text-green-400' : eq.dg < 0 ? 'text-red-400' : 'text-gray-400'}">${eq.dg > 0 ? '+' + eq.dg : eq.dg}</td>
@@ -480,153 +475,158 @@
                 todosLosTerceros.push(celdas[2]);
             });
 
-    procesarBolsaTerceros(todosLosTerceros, clasificadosEstructura);
-}
+            procesarBolsaTerceros(todosLosTerceros, clasificadosEstructura);
+        }
 
         function procesarBolsaTerceros(listaTerceros, clasificadosEstructura) {
-            listaTerceros.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+    // 1. Primero ordenamos por la matemática estricta del torneo
+    listaTerceros.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
 
-            const actuales = listaTerceros.map(t => `${t.grupo}:${t.nombre}`);
-            if (!fixture.ordenManual['terceros_lista']) {
-                fixture.ordenManual['terceros_lista'] = actuales;
-            } else {
-                let guardados = fixture.ordenManual['terceros_lista'].filter(k => actuales.includes(k));
-                actuales.forEach(k => { if(!guardados.includes(k)) guardados.push(k); });
-                fixture.ordenManual['terceros_lista'] = guardados;
-                listaTerceros.sort((a, b) => fixture.ordenManual['terceros_lista'].indexOf(`${a.grupo}:${a.nombre}`) - fixture.ordenManual['terceros_lista'].indexOf(`${b.grupo}:${b.nombre}`));
-            }
+    const actuales = listaTerceros.map(t => `${t.grupo}:${t.nombre}`);
+    
+    if (!fixture.ordenManual['terceros_lista'] || fixture.ordenManual['terceros_lista'].length === 0) {
+        fixture.ordenManual['terceros_lista'] = actuales;
+    } else {
+        let guardados = fixture.ordenManual['terceros_lista'].filter(k => actuales.includes(k));
+        actuales.forEach(k => { if(!guardados.includes(k)) guardados.push(k); });
+        // No pisamos el orden con actuales directamente acá para no perder lo que el usuario movió
+    }
+    
+    // FIX INTEGRAL: El orden manual solo se aplica si empatan en Puntos, Diferencia de Goles y Goles a Favor
+    listaTerceros.sort((a, b) => {
+        if (b.pts !== a.pts) return b.pts - a.pts;
+        if (b.dg !== a.dg) return b.dg - a.dg;
+        if (b.gf !== a.gf) return b.gf - a.gf;
+        // Si empataron en todo lo deportivo, recién ahí desempatamos por cómo están ubicados en las flechas manuales
+        return fixture.ordenManual['terceros_lista'].indexOf(`${a.grupo}:${a.nombre}`) - fixture.ordenManual['terceros_lista'].indexOf(`${b.grupo}:${b.nombre}`);
+    });
 
-            const cuerpoTerceros = document.getElementById('tabla-terceros-general');
-            if (cuerpoTerceros) {
-                cuerpoTerceros.innerHTML = '';
-                listaTerceros.forEach((eq, idx) => {
-                    let bgClase = idx < 8 ? "bg-green-950/20 text-green-200" : "bg-red-950/20 text-red-300";
-                    cuerpoTerceros.innerHTML += `
-                        <tr class="${bgClase} hover:bg-gray-800/60 transition text-xs font-mono">
-                            <td class="py-2 pl-2 font-bold text-yellow-500">Grup. ${eq.grupo}</td>
-                            <td class="py-2 font-bold text-gray-100 font-sans truncate max-w-[120px]">${obtenerBandera(eq.nombre)} ${eq.nombre}</td>
-                            <td class="text-center">${eq.pj}</td><td class="text-center">${eq.g}</td><td class="text-center">${eq.e}</td><td class="text-center">${eq.p}</td>
-                            <td class="text-center">${eq.gf}</td><td class="text-center">${eq.gc}</td>
-                            <td class="text-center font-bold ${eq.dg > 0 ? 'text-green-400' : eq.dg < 0 ? 'text-red-400' : 'text-gray-400'}">${eq.dg > 0 ? '+' + eq.dg : eq.dg}</td>
-                            <td class="text-center font-bold text-yellow-400 bg-gray-900/30">${eq.pts}</td>
-                            <td class="text-center py-1 font-sans">
-                                <button onclick="moverPosicion('terceros', '', ${idx}, -1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans">▲</button>
-                                <button onclick="moverPosicion('terceros', '', ${idx}, 1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans">▼</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
+    const cuerpoTerceros = document.getElementById('tabla-terceros-general');
+    if (cuerpoTerceros) {
+        cuerpoTerceros.innerHTML = '';
+        listaTerceros.forEach((eq, idx) => {
+            let bgClase = idx < 8 ? "bg-green-950/20 text-green-200" : "bg-red-950/20 text-red-300";
+            cuerpoTerceros.innerHTML += `
+                <tr class="${bgClase} hover:bg-gray-800/60 transition text-xs font-mono">
+                    <td class="py-2 pl-2 font-bold text-yellow-500">Grup. ${eq.grupo}</td>
+                    <td class="py-2 font-bold text-gray-100 font-sans flex items-center space-x-2 truncate max-w-[150px]">${obtenerBandera(eq.nombre)} <span>${eq.nombre}</span></td>
+                    <td class="text-center">${eq.pj}</td><td class="text-center">${eq.g}</td><td class="text-center">${eq.e}</td><td class="text-center">${eq.p}</td>
+                    <td class="text-center">${eq.gf}</td><td class="text-center">${eq.gc}</td>
+                    <td class="text-center font-bold ${eq.dg > 0 ? 'text-green-400' : eq.dg < 0 ? 'text-red-400' : 'text-gray-400'}">${eq.dg > 0 ? '+' + eq.dg : eq.dg}</td>
+                    <td class="text-center font-bold text-yellow-400 bg-gray-900/30">${eq.pts}</td>
+                    <td class="text-center py-1 font-sans">
+                        <button onclick="moverPosicion('terceros', '', ${idx}, -1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans cursor-pointer">▲</button>
+                        <button onclick="moverPosicion('terceros', '', ${idx}, 1)" class="px-0.5 text-gray-400 hover:text-yellow-400 font-bold font-sans cursor-pointer">▼</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
 
-            const mejores8Terceros = listaTerceros.slice(0, 8);
-            const claveCombinacion = mejores8Terceros.map(t => t.grupo).sort().join('');
-            let mapeoTercerosAsignados = DATASET_FIFA[claveCombinacion] || DATASET_FIFA["EFGHIJKL"];
+    const mejores8Terceros = listaTerceros.slice(0, 8);
+    const claveCombinacion = mejores8Terceros.map(t => t.grupo).sort().join('');
+    
+    let mapeoTercerosAsignados = DATASET_FIFA[claveCombinacion] || DATASET_FIFA["EFGHIJKL"];
 
-            let buscarNombreTerceroDeGrupo = (letra) => {
-                const encontrado = mejores8Terceros.find(t => t.grupo === letra);
-                return encontrado ? encontrado.nombre : `3º Grupo ${letra}`;
-            };
+    let buscarNombreTerceroDeGrupo = (letra) => {
+        const encontrado = mejores8Terceros.find(t => t.grupo === letra);
+        return encontrado ? encontrado.nombre : `3º Grupo ${letra}`;
+    };
 
-            // RESOLUCIÓN DINÁMICA DEL ÁRBOL ELIMINATORIO COMPLETO
-            window.cacheEquiposMatch = {};
+    window.cacheEquiposMatch = {};
 
-            // 1. Cargar datos base de 16avos
-            const llaves16avos = [
-                { id: 73, L: clasificadosEstructura["2A"], V: clasificadosEstructura["2B"], t: "28/06", h: "16:00" },
-                { id: 74, L: clasificadosEstructura["1E"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1E"]), t: "29/06", h: "17:30" },
-                { id: 75, L: clasificadosEstructura["1F"], V: clasificadosEstructura["2C"], t: "29/06", h: "22:00" },
-                { id: 76, L: clasificadosEstructura["1C"], V: clasificadosEstructura["2F"], t: "29/06", h: "14:00" },
-                { id: 77, L: clasificadosEstructura["1I"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1I"]), t: "30/06", h: "18:00" },
-                { id: 78, L: clasificadosEstructura["2E"], V: clasificadosEstructura["2I"], t: "30/06", h: "14:00" },
-                { id: 79, L: clasificadosEstructura["1A"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1A"]), t: "30/06", h: "22:00" },
-                { id: 80, L: clasificadosEstructura["1L"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1L"]), t: "01/07", h: "13:00" },
-                { id: 81, L: clasificadosEstructura["1D"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1D"]), t: "01/07", h: "21:00" },
-                { id: 82, L: clasificadosEstructura["1G"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1G"]), t: "01/07", h: "17:00" },
-                { id: 83, L: clasificadosEstructura["2K"], V: clasificadosEstructura["2L"], t: "02/07", h: "20:00" },
-                { id: 84, L: clasificadosEstructura["1H"], V: clasificadosEstructura["2J"], t: "02/07", h: "16:00" },
-                { id: 85, L: clasificadosEstructura["1B"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1B"]), t: "02/07", h: "00:00" },
-                { id: 86, L: clasificadosEstructura["1J"], V: clasificadosEstructura["2H"], t: "03/07", h: "19:00" },
-                { id: 87, L: clasificadosEstructura["1K"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1K"]), t: "03/07", h: "22:30" },
-                { id: 88, L: clasificadosEstructura["2D"], V: clasificadosEstructura["2G"], t: "03/07", h: "15:00" }
-            ];
+    const llaves16avos = [
+        { id: 73, L: clasificadosEstructura["2A"], V: clasificadosEstructura["2B"], t: "28/06", h: "16:00" },
+        { id: 74, L: clasificadosEstructura["1E"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1E"]), t: "29/06", h: "17:30" },
+        { id: 75, L: clasificadosEstructura["1F"], V: clasificadosEstructura["2C"], t: "29/06", h: "22:00" },
+        { id: 76, L: clasificadosEstructura["1C"], V: clasificadosEstructura["2F"], t: "29/06", h: "14:00" },
+        { id: 77, L: clasificadosEstructura["1I"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1I"]), t: "30/06", h: "18:00" },
+        { id: 78, L: clasificadosEstructura["2E"], V: clasificadosEstructura["2I"], t: "30/06", h: "14:00" },
+        { id: 79, L: clasificadosEstructura["1A"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1A"]), t: "30/06", h: "22:00" },
+        { id: 80, L: clasificadosEstructura["1L"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1L"]), t: "01/07", h: "13:00" },
+        { id: 81, L: clasificadosEstructura["1D"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1D"]), t: "01/07", h: "21:00" },
+        { id: 82, L: clasificadosEstructura["1G"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1G"]), t: "01/07", h: "17:00" },
+        { id: 83, L: clasificadosEstructura["2K"], V: clasificadosEstructura["2L"], t: "02/07", h: "20:00" },
+        { id: 84, L: clasificadosEstructura["1H"], V: clasificadosEstructura["2J"], t: "02/07", h: "16:00" },
+        { id: 85, L: clasificadosEstructura["1B"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1B"]), t: "02/07", h: "00:00" },
+        { id: 86, L: clasificadosEstructura["1J"], V: clasificadosEstructura["2H"], t: "03/07", h: "19:00" },
+        { id: 87, L: clasificadosEstructura["1K"], V: buscarNombreTerceroDeGrupo(mapeoTercerosAsignados["1K"]), t: "03/07", h: "22:30" },
+        { id: 88, L: clasificadosEstructura["2D"], V: clasificadosEstructura["2G"], t: "03/07", h: "15:00" }
+    ];
 
-            llaves16avos.forEach(p => {
-                window.cacheEquiposMatch[`73-88_${p.id}_L`] = p.L;
-                window.cacheEquiposMatch[`73-88_${p.id}_V`] = p.V;
-            });
+    llaves16avos.forEach(p => {
+        window.cacheEquiposMatch[`73-88_${p.id}_L`] = p.L;
+        window.cacheEquiposMatch[`73-88_${p.id}_V`] = p.V;
+    });
 
-            let resolverGanador = (faseKey, matchId, fallbackText) => {
-                let gL = fixture.golesFaseFinal[`${matchId}_L`];
-                let gV = fixture.golesFaseFinal[`${matchId}_V`];
-                if (gL === undefined || gV === undefined || gL === "" || gV === "") return fallbackText;
-                if (parseInt(gL) > parseInt(gV)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_L`] || fallbackText;
-                if (parseInt(gV) > parseInt(gL)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_V`] || fallbackText;
-                return fallbackText;
-            };
+    let resolverGanador = (faseKey, matchId, fallbackText) => {
+        let gL = fixture.golesFaseFinal[`${matchId}_L`];
+        let gV = fixture.golesFaseFinal[`${matchId}_V`];
+        if (gL === undefined || gV === undefined || gL === "" || gV === "") return fallbackText;
+        if (parseInt(gL) > parseInt(gV)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_L`] || fallbackText;
+        if (parseInt(gV) > parseInt(gL)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_V`] || fallbackText;
+        return fallbackText;
+    };
 
-            let resolverPerdedor = (faseKey, matchId, fallbackText) => {
-                let gL = fixture.golesFaseFinal[`${matchId}_L`];
-                let gV = fixture.golesFaseFinal[`${matchId}_V`];
-                if (gL === undefined || gV === undefined || gL === "" || gV === "") return fallbackText;
-                if (parseInt(gL) < parseInt(gV)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_L`] || fallbackText;
-                if (parseInt(gV) < parseInt(gL)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_V`] || fallbackText;
-                return fallbackText;
-            };
+    let resolverPerdedor = (faseKey, matchId, fallbackText) => {
+        let gL = fixture.golesFaseFinal[`${matchId}_L`];
+        let gV = fixture.golesFaseFinal[`${matchId}_V`];
+        if (gL === undefined || gV === undefined || gL === "" || gV === "") return fallbackText;
+        if (parseInt(gL) < parseInt(gV)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_L`] || fallbackText;
+        if (parseInt(gV) < parseInt(gL)) return window.cacheEquiposMatch[`${faseKey}_${matchId}_V`] || fallbackText;
+        return fallbackText;
+    };
 
-            // 2. Octavos
-            const llavesOctavos = [
-                { id: 89, L: resolverGanador("73-88", 74, "Ganador 74"), V: resolverGanador("73-88", 77, "Ganador 77"), t: "04/07", h: "18:00" },
-                { id: 90, L: resolverGanador("73-88", 73, "Ganador 73"), V: resolverGanador("73-88", 75, "Ganador 75"), t: "04/07", h: "14:00" },
-                { id: 91, L: resolverGanador("73-88", 76, "Ganador 76"), V: resolverGanador("73-88", 78, "Ganador 78"), t: "05/07", h: "17:00" },
-                { id: 92, L: resolverGanador("73-88", 79, "Ganador 79"), V: resolverGanador("73-88", 80, "Ganador 80"), t: "05/07", h: "21:00" },
-                { id: 93, L: resolverGanador("73-88", 83, "Ganador 83"), V: resolverGanador("73-88", 84, "Ganador 84"), t: "06/07", h: "16:00" },
-                { id: 94, L: resolverGanador("73-88", 81, "Ganador 81"), V: resolverGanador("73-88", 82, "Ganador 82"), t: "06/07", h: "21:00" },
-                { id: 95, L: resolverGanador("73-88", 86, "Ganador 86"), V: resolverGanador("73-88", 88, "Ganador 88"), t: "07/07", h: "13:00" },
-                { id: 96, L: resolverGanador("73-88", 85, "Ganador 85"), V: resolverGanador("73-88", 87, "Ganador 87"), t: "07/07", h: "17:00" }
-            ];
+    const llavesOctavos = [
+        { id: 89, L: resolverGanador("73-88", 74, "Ganador 74"), V: resolverGanador("73-88", 77, "Ganador 77"), t: "04/07", h: "18:00" },
+        { id: 90, L: resolverGanador("73-88", 73, "Ganador 73"), V: resolverGanador("73-88", 75, "Ganador 75"), t: "04/07", h: "14:00" },
+        { id: 91, L: resolverGanador("73-88", 76, "Ganador 76"), V: resolverGanador("73-88", 78, "Ganador 78"), t: "05/07", h: "17:00" },
+        { id: 92, L: resolverGanador("73-88", 79, "Ganador 79"), V: resolverGanador("73-88", 80, "Ganador 80"), t: "05/07", h: "21:00" },
+        { id: 93, L: resolverGanador("73-88", 83, "Ganador 83"), V: resolverGanador("73-88", 84, "Ganador 84"), t: "06/07", h: "16:00" },
+        { id: 94, L: resolverGanador("73-88", 81, "Ganador 81"), V: resolverGanador("73-88", 82, "Ganador 82"), t: "06/07", h: "21:00" },
+        { id: 95, L: resolverGanador("73-88", 86, "Ganador 86"), V: resolverGanador("73-88", 88, "Ganador 88"), t: "07/07", h: "13:00" },
+        { id: 96, L: resolverGanador("73-88", 85, "Ganador 85"), V: resolverGanador("73-88", 87, "Ganador 87"), t: "07/07", h: "17:00" }
+    ];
 
-            llavesOctavos.forEach(p => {
-                window.cacheEquiposMatch[`89-96_${p.id}_L`] = p.L;
-                window.cacheEquiposMatch[`89-96_${p.id}_V`] = p.V;
-            });
+    llavesOctavos.forEach(p => {
+        window.cacheEquiposMatch[`89-96_${p.id}_L`] = p.L;
+        window.cacheEquiposMatch[`89-96_${p.id}_V`] = p.V;
+    });
 
-            // 3. Cuartos
-            const llavesCuartos = [
-                { id: 97, L: resolverGanador("89-96", 89, "Ganador 89"), V: resolverGanador("89-96", 90, "Ganador 90"), t: "09/07", h: "17:00" },
-                { id: 98, L: resolverGanador("89-96", 93, "Ganador 93"), V: resolverGanador("89-96", 94, "Ganador 94"), t: "10/07", h: "16:00" },
-                { id: 99, L: resolverGanador("89-96", 91, "Ganador 91"), V: resolverGanador("89-96", 92, "Ganador 92"), t: "11/07", h: "18:00" },
-                { id: 100, L: resolverGanador("89-96", 95, "Ganador 95"), V: resolverGanador("89-96", 96, "Ganador 96"), t: "11/07", h: "22:00" }
-            ];
+    const llavesCuartos = [
+        { id: 97, L: resolverGanador("89-96", 89, "Ganador 89"), V: resolverGanador("89-96", 90, "Ganador 90"), t: "09/07", h: "17:00" },
+        { id: 98, L: resolverGanador("89-96", 93, "Ganador 93"), V: resolverGanador("89-96", 94, "Ganador 94"), t: "10/07", h: "16:00" },
+        { id: 99, L: resolverGanador("89-96", 91, "Ganador 91"), V: resolverGanador("89-96", 92, "Ganador 92"), t: "11/07", h: "18:00" },
+        { id: 100, L: resolverGanador("89-96", 95, "Ganador 95"), V: resolverGanador("89-96", 96, "Ganador 96"), t: "11/07", h: "22:00" }
+    ];
 
-            llavesCuartos.forEach(p => {
-                window.cacheEquiposMatch[`97-100_${p.id}_L`] = p.L;
-                window.cacheEquiposMatch[`97-100_${p.id}_V`] = p.V;
-            });
+    llavesCuartos.forEach(p => {
+        window.cacheEquiposMatch[`97-100_${p.id}_L`] = p.L;
+        window.cacheEquiposMatch[`97-100_${p.id}_V`] = p.V;
+    });
 
-            // 4. Semis
-            const llavesSemis = [
-                { id: 101, L: resolverGanador("97-100", 97, "Ganador 97"), V: resolverGanador("97-100", 98, "Ganador 98"), t: "14/07", h: "16:00" },
-                { id: 102, L: resolverGanador("97-100", 99, "Ganador 99"), V: resolverGanador("97-100", 100, "Ganador 100"), t: "15/07", h: "16:00" }
-            ];
+    const llavesSemis = [
+        { id: 101, L: resolverGanador("97-100", 97, "Ganador 97"), V: resolverGanador("97-100", 98, "Ganador 98"), t: "14/07", h: "16:00" },
+        { id: 102, L: resolverGanador("97-100", 99, "Ganador 99"), V: resolverGanador("97-100", 100, "Ganador 100"), t: "15/07", h: "16:00" }
+    ];
 
-            llavesSemis.forEach(p => {
-                window.cacheEquiposMatch[`101-102_${p.id}_L`] = p.L;
-                window.cacheEquiposMatch[`101-102_${p.id}_V`] = p.V;
-            });
+    llavesSemis.forEach(p => {
+        window.cacheEquiposMatch[`101-102_${p.id}_L`] = p.L;
+        window.cacheEquiposMatch[`101-102_${p.id}_V`] = p.V;
+    });
 
-            // 5. Tercer Puesto y Final
-            const llaveTercero = [{ id: 103, L: resolverPerdedor("101-102", 101, "Perdedor 101"), V: resolverPerdedor("101-102", 102, "Perdedor 102"), t: "18/07", h: "18:00" }];
-            const llaveFinal = [{ id: 104, L: resolverGanador("101-102", 101, "Ganador 101"), V: resolverGanador("101-102", 102, "Ganador 102"), t: "19/07", h: "16:00" }];
+    const llaveTercero = [{ id: 103, L: resolverPerdedor("101-102", 101, "Perdedor 101"), V: resolverPerdedor("101-102", 102, "Perdedor 102"), t: "18/07", h: "18:00" }];
+    const llaveFinal = [{ id: 104, L: resolverGanador("101-102", 101, "Ganador 101"), V: resolverGanador("101-102", 102, "Ganador 102"), t: "19/07", h: "16:00" }];
 
-            renderizarFase('contenedor-16avos', llaves16avos);
-            renderizarFase('contenedor-octavos', llavesOctavos);
-            renderizarFase('contenedor-cuartos', llavesCuartos);
-            renderizarFase('contenedor-semis', llavesSemis);
-            renderizarFase('contenedor-tercer-puesto', llaveTercero);
-            renderizarFase('contenedor-final', llaveFinal);
+    renderizarFase('contenedor-16avos', llaves16avos);
+    renderizarFase('contenedor-octavos', llavesOctavos);
+    renderizarFase('contenedor-cuartos', llavesCuartos);
+    renderizarFase('contenedor-semis', llavesSemis);
+    renderizarFase('contenedor-tercer-puesto', llaveTercero);
+    renderizarFase('contenedor-final', llaveFinal);
 
-            localStorage.setItem('fixture_mundial_v8', JSON.stringify(fixture));
-        }
+    localStorage.setItem('fixture_mundial_v8', JSON.stringify(fixture));
+}
 
         function renderizarFase(contenedorId, partidos) {
             const contenedor = document.getElementById(contenedorId);
@@ -646,7 +646,7 @@
                         <div class="space-y-2">
                             <div class="flex items-center justify-between text-sm">
                                 <div class="flex items-center space-x-2 truncate max-w-[75%]">
-                                    <span class="text-base">${obtenerBandera(p.L)}</span>
+                                    ${obtenerBandera(p.L)}
                                     <span class="font-bold truncate text-gray-200">${p.L || "Por definir"}</span>
                                 </div>
                                 <input type="number" min="0" value="${golesL}" 
@@ -655,7 +655,7 @@
                             </div>
                             <div class="flex items-center justify-between text-sm">
                                 <div class="flex items-center space-x-2 truncate max-w-[75%]">
-                                    <span class="text-base">${obtenerBandera(p.V)}</span>
+                                    ${obtenerBandera(p.V)}
                                     <span class="font-bold truncate text-gray-200">${p.V || "Por definir"}</span>
                                 </div>
                                 <input type="number" min="0" value="${golesV}" 
@@ -702,6 +702,7 @@
 
         renderizarMundial();
         calcularTablas();
+        cambiarTab(fixture.tabActiva);
     </script>
 </body>
 </html>
